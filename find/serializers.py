@@ -1,13 +1,17 @@
 from rest_framework import serializers
-from .models import FindCategory, Post, FindComment
+from .models import FindCategory, Post, FindComment, FindLocation
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = FindCategory
         fields = '__all__'
 
+class LocaitonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FindLocation
+        fields = '__all__'
+
 class PostSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
 
     class Meta:
         model = Post
