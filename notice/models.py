@@ -7,10 +7,11 @@ class NoticePost(models.Model):
 
     content = models.TextField()
 
-    head_image = models.ImageField(upload_to='notice/images/%Y/%m/%d/', blank=True)
-
+    notice_image = models.ImageField(upload_to='notice/images/%Y/%m/%d/', blank=True)
+    top_fixed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
