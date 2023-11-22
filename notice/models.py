@@ -15,6 +15,8 @@ class NoticePost(models.Model):
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+    view_count = models.IntegerField(default=0)
+
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'
 
