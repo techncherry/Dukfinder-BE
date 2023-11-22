@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import FindPost, FindCategory, FindComment
+from .models import Post, FindCategory, FindComment
 
-admin.site.register(FindPost)
+admin.site.register(Post)
 
 
 class CategoryAdmin(admin.ModelAdmin):

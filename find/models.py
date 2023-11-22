@@ -15,7 +15,7 @@ class FindCategory(models.Model):
         verbose_name_plural = 'categories'
 
 
-class FindPost(models.Model):
+class Post(models.Model):
     title = models.CharField(max_length=30, blank=True)
     hook_text = models.CharField(max_length=100, blank=True)
     category = models.ForeignKey(FindCategory, null=True, blank=True, on_delete=models.SET_NULL)
@@ -43,7 +43,7 @@ class FindPost(models.Model):
 
 
 class FindComment(models.Model):
-    post = models.ForeignKey(FindPost, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

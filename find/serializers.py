@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FindCategory, FindPost, FindComment
+from .models import FindCategory, Post, FindComment
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,7 +10,7 @@ class PostSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
 
     class Meta:
-        model = FindPost
+        model = Post
         fields = '__all__'
 
 class CommentSerializer(serializers.ModelSerializer):

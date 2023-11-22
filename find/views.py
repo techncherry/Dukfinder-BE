@@ -1,13 +1,13 @@
 from rest_framework import generics
-from .models import FindPost, FindComment
+from .models import Post, FindComment
 from .serializers import PostSerializer, CommentSerializer
 
 class PostListCreateView(generics.ListCreateAPIView):
-    queryset = FindPost.objects.all()
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = FindPost.objects.all()
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
 
 class CommentListCreateView(generics.ListCreateAPIView):
