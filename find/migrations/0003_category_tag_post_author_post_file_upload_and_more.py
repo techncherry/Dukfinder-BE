@@ -40,12 +40,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='post',
             name='file_upload',
-            field=models.FileField(blank=True, upload_to='blog/files/%Y/%m/%d/'),
+            field=models.FileField(blank=True, upload_to='find/files/%Y/%m/%d/'),
         ),
         migrations.AddField(
             model_name='post',
             name='head_image',
-            field=models.ImageField(blank=True, upload_to='blog/images/%Y/%m/%d/'),
+            field=models.ImageField(blank=True, upload_to='find/images/%Y/%m/%d/'),
         ),
         migrations.AddField(
             model_name='post',
