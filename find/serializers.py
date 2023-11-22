@@ -15,9 +15,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('id', 'title', 'category', 'location', 'date_select', 'content', 'head_image', 'created_at', 'updated_at',  'author')
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = FindComment
-        fields = '__all__'
+        fields = ('post', 'content', 'created_at', 'modified_at',  'author')

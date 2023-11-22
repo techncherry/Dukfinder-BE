@@ -42,6 +42,8 @@ class Post(models.Model):
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+    date_select = models.DateTimeField(blank=True, null=True)
+
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'
 
