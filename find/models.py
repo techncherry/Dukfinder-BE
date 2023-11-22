@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import os
 
-class Post(models.Model):
+class FindPost(models.Model):
     title = models.CharField(max_length=30, blank=True)
     hook_text = models.CharField(max_length=100, blank=True)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
@@ -27,3 +27,14 @@ class Post(models.Model):
 
     def get_file_ext(self):
         return self.get_file_name().split('.')[-1]
+
+
+class FindComment(models.Model):
+    post = models.ForeignKey(FindPost, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.author}::{self.content}'
