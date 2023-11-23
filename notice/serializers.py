@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import NoticePost
+from django.contrib.auth.models import User
 
 class NoticePostSerializer(serializers.ModelSerializer):
 
@@ -12,7 +13,7 @@ class NoticePostSerializer(serializers.ModelSerializer):
         instance.save()
 
 
-class NoticePostTitleDateSerializer(serializers.ModelSerializer):
+class NoticePostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = NoticePost
-        fields = ('title', 'created_at', 'view_count')
+        fields = '__all__'
