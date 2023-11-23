@@ -1,3 +1,2 @@
 venv/ 
-db
-db2
+db.sqlite3
