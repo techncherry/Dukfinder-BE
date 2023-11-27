@@ -32,6 +32,28 @@ class FindPostUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = FindPostSerializer
     lookup_url_kwarg = 'intLpk'
 
+class ThisWeekPostsListView(generics.ListAPIView):
+    serializer_class = FindPostSerializer
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+
+        queryset = FindPost.objects.filter(created_at__range=[start_of_week, end_of_week])
+        return queryset
+
+class ThisMonthPostsListView(generics.ListAPIView):
+    serializer_class = FindPostSerializer
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        start_of_month = today.replace(day=1)
+        end_of_month = start_of_month + timedelta(days=32)
+        end_of_month = end_of_month.replace(day=1) - timedelta(days=1)
+
+        queryset = FindPost.objects.filter(created_at__range=[start_of_month, end_of_month])
+        return queryset
 
 class FindPostSearchAPIView(generics.ListAPIView):
     serializer_class = FindPostSerializer
