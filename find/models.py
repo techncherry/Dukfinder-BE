@@ -50,17 +50,3 @@ class Post(models.Model):
     def get_absolute_url(self):
         return f'/blog/{self.pk}/'
 
-
-
-class FindComment(models.Model):
-    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
-    author = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
-    content = models.TextField(max_length=100)
-
-    parent = models.ForeignKey('self', related_name='reply', on_delete=models.CASCADE, null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.author}::{self.content}'

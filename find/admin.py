@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, FindCategory, FindComment, FindLocation
+from .models import Post, FindCategory,FindLocation
 
 admin.site.register(Post)
 
@@ -13,4 +13,3 @@ class LocationAdmin(admin.ModelAdmin):
 
 admin.site.register(FindCategory, CategoryAdmin)
 admin.site.register(FindLocation, LocationAdmin)
-admin.site.register(FindComment)

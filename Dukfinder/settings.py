@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'find',
     'rest_framework',
     'rest_framework.authtoken',
-    'notice'
+    'notice',
+    'lost'
 ]
 
 MIDDLEWARE = [
