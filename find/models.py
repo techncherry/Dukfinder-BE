@@ -1,38 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
-import os
-class FindCategory(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return f'/blog/category/{self.slug}/'
-
-    class Meta:
-        verbose_name_plural = 'categories'
-
-class FindLocation(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return f'/blog/locations/{self.slug}/'
-
-    class Meta:
-        verbose_name_plural = 'locations'
 
 
-class Post(models.Model):
+class FindPost(models.Model):
     title = models.CharField(max_length=30, blank=True)
 
-    category = models.ForeignKey(FindCategory, null=True, blank=True, on_delete=models.SET_NULL)
-    location = models.ForeignKey(FindLocation, null=True, blank=True, on_delete=models.SET_NULL)
     content = models.TextField()
 
     head_image = models.ImageField(upload_to='find/images/%Y/%m/%d/', blank=True)
@@ -44,6 +16,32 @@ class Post(models.Model):
 
     date_select = models.DateTimeField(blank=True, null=True)
 
+    CATEGORY_CHOICES = [
+        ('전자기기', '전자기기'),
+        ('지갑/카드', '지갑/카드'),
+        ('악세사리', '악세사리'),
+        ('화장품', '화장품'),
+        ('기타', '기타'),
+    ]
+
+    category = models.CharField(max_length=20, blank=True, null=True, choices=CATEGORY_CHOICES)
+
+    LOCATION_CHOICES = [
+        ('정문·대학본부', '정문·대학본부'),
+        ('후문', '후문'),
+        ('인문사회관', '인문사회관'),
+        ('대강의동', '대강의동'),
+        ('차마리사기념관', '차미리사기념관'),
+        ('학생회관', '학생회관'),
+        ('도서관·대학원', '도서관·대학원'),
+        ('예술관', '예술관'),
+        ('자연관', '자연관'),
+        ('약학관', '약학관'),
+        ('기타', '기타'),
+    ]
+
+    location = models.CharField(max_length=20, blank=True, null=True, choices=LOCATION_CHOICES)
+
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'
 
@@ -51,13 +49,3 @@ class Post(models.Model):
         return f'/blog/{self.pk}/'
 
 
-
-class FindComment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.author}::{self.content}'

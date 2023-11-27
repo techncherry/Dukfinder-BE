@@ -1,19 +1,41 @@
 from rest_framework import generics
-from .models import Post, FindComment
-from .serializers import PostSerializer, CommentSerializer
+from rest_framework.generics import CreateAPIView
+from .models import FindPost
+from django.utils import timezone
+from datetime import timedelta
+from .serializers import FindPostSerializer
+from django.db.models import Q
 
-class PostListCreateView(generics.ListCreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+class CategoryPostsView(generics.ListAPIView):
+    serializer_class = FindPostSerializer
 
-class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    def get_queryset(self):
+        category = self.kwargs['category']
+        return FindPost.objects.filter(category=category)
 
-class CommentListCreateView(generics.ListCreateAPIView):
-    queryset = FindComment.objects.all()
-    serializer_class = CommentSerializer
 
-class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = FindComment.objects.all()
-    serializer_class = CommentSerializer
+class FindPostListView(generics.ListAPIView): #Findpostlist
+    queryset = FindPost.objects.all()
+    serializer_class = FindPostSerializer
+
+
+class FindPostDetailView(generics.RetrieveDestroyAPIView): #Findpostlistdetail, destory
+    queryset = FindPost.objects.all()
+    serializer_class = FindPostSerializer
+
+class FindPostCreateView(CreateAPIView): #lostpostlistcreate
+    queryset = FindPost.objects.all()
+    serializer_class = FindPostSerializer
+
+class FindPostUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = FindPost.objects.all()
+    serializer_class = FindPostSerializer
+    lookup_url_kwarg = 'intLpk'
+
+
+class FindPostSearchAPIView(generics.ListAPIView):
+    serializer_class = FindPostSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('q', '')
+        return FindPost.objects.filter(Q(title__icontains=query))
