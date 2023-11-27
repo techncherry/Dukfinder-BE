@@ -32,3 +32,5 @@ class NoticePostUpdateView(generics.RetrieveUpdateAPIView):
     def perform_update(self, serializer):
         serializer.save()
         return HttpResponseRedirect(reverse('notice-list'))
+
+

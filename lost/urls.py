@@ -1,7 +1,6 @@
 from django.urls import path, include
 from .views import CategoryPostsView, LostPostListView, LostPostDetailView, ThisWeekPostsListView, ThisMonthPostsListView, LostPostSearchAPIView, LostPostCreateView, LostPostUpdateView
-from rest_framework.routers import DefaultRouter
-from . import views
+
 
 
 urlpatterns = [

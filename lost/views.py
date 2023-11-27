@@ -1,15 +1,10 @@
-from rest_framework import generics, viewsets
+from rest_framework import generics
 from rest_framework.generics import CreateAPIView
-from rest_framework.response import Response
-from rest_framework import status
 from .models import LostPost
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
 from .serializers import LostPostSerializer
 from django.db.models import Q
-from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
 
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = LostPostSerializer
