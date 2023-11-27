@@ -5,11 +5,11 @@ from django.http import HttpResponseRedirect
 from .models import NoticePost
 from .serializers import NoticePostSerializer, NoticePostListSerializer
 
-class NoticePostListView(generics.ListAPIView):
+class NoticePostListView(generics.ListAPIView): #공지사항 리스트
     queryset = NoticePost.objects.order_by('-top_fixed', '-created_at')
     serializer_class = NoticePostListSerializer
 
-class NoticePostCreateView(generics.CreateAPIView):
+class NoticePostCreateView(generics.CreateAPIView): #공지사항 작성
     queryset = NoticePost.objects.all()
     serializer_class = NoticePostSerializer
 
@@ -17,15 +17,24 @@ class NoticePostCreateView(generics.CreateAPIView):
         serializer.save()
         return HttpResponseRedirect(reverse('notice-list'))
 
-class NoticePostDetailView(generics.RetrieveUpdateDestroyAPIView):
+class NoticePostDetailView(generics.RetrieveDestroyAPIView):
     queryset = NoticePost.objects.all()
     serializer_class = NoticePostSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        # Call the increase_views method to increment the view count
+        serializer.increase_views(instance)
+
+        return Response(serializer.data)
 
     def perform_destroy(self, instance):
         instance.delete()
         return HttpResponseRedirect(reverse('notice-list'))
 
-class NoticePostUpdateView(generics.RetrieveUpdateAPIView):
+class NoticePostUpdateView(generics.RetrieveUpdateAPIView): #공지사항 수정
     queryset = NoticePost.objects.all()
     serializer_class = NoticePostSerializer
 
