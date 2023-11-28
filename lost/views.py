@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.generics import CreateAPIView
 from .models import LostPost
 from django.utils import timezone
@@ -6,8 +6,21 @@ from datetime import timedelta
 from .serializers import LostPostSerializer
 from django.db.models import Q
 
+
+class CustomReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'GET' and request.user.is_authenticated:
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.author == request.user
+
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = LostPostSerializer
+
 
     def get_queryset(self):
         category = self.kwargs['category']
@@ -17,25 +30,33 @@ class CategoryPostsView(generics.ListAPIView):
 class LostPostListView(generics.ListAPIView): #lostpostlist
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
-
+    permission_classes = [CustomReadOnly]
 
 class LostPostDetailView(generics.RetrieveDestroyAPIView): #lostpostlistdetail, destory
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
+    permission_classes = [CustomReadOnly]
 
 class LostPostCreateView(CreateAPIView): #lostpostlistcreate
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class LostPostUpdateView(generics.RetrieveUpdateAPIView):
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
     lookup_url_kwarg = 'intLpk'  # Set the correct lookup field name
+    permission_classes = [CustomReadOnly]  # Apply the custom permission class
 
+    # Override the default permission classes
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.IsAuthenticated(), CustomReadOnly()]
+        return [CustomReadOnly()]
 
 class ThisWeekPostsListView(generics.ListAPIView):
     serializer_class = LostPostSerializer
-
+    permission_classes = [CustomReadOnly]
     def get_queryset(self):
         today = timezone.now().date()
         start_of_week = today - timedelta(days=today.weekday())
@@ -46,7 +67,7 @@ class ThisWeekPostsListView(generics.ListAPIView):
 
 class ThisMonthPostsListView(generics.ListAPIView):
     serializer_class = LostPostSerializer
-
+    permission_classes = [CustomReadOnly]
     def get_queryset(self):
         today = timezone.now().date()
         start_of_month = today.replace(day=1)
@@ -58,7 +79,9 @@ class ThisMonthPostsListView(generics.ListAPIView):
 
 class LostPostSearchAPIView(generics.ListAPIView):
     serializer_class = LostPostSerializer
-
+    permission_classes = [CustomReadOnly]
     def get_queryset(self):
         query = self.request.query_params.get('q', '')
         return LostPost.objects.filter(Q(title__icontains=query))
+
+
