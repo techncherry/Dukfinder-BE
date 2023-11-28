@@ -58,6 +58,7 @@ class UserinfoView(generics.GenericAPIView):
         data = {'success': '로그아웃 실패'}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
+# 비밀번호 변경
 class PasswordView(generics.UpdateAPIView):
     serializer_class = PasswordSerializer
     permission_classes = (IsAuthenticated,)
