@@ -30,7 +30,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [CustomReadOnly] # 본인만 프로필 수정 가능하도록
 
-# 유저 이름, 이메일 가져오기/회원탈퇴/로그아웃
+# 유저 이름과 이메일 가져오기/회원탈퇴/로그아웃
 class UserinfoView(generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserinfoSerializer
