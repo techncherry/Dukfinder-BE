@@ -24,7 +24,7 @@ class LoginView(generics.GenericAPIView):
         token = serializer.validated_data  # validate()의 리턴값인 token을 받아온다.
         return Response({"token": token.key}, status=status.HTTP_200_OK)
     
-# 프로필 뷰    
+# 프로필    
 class ProfileView(generics.RetrieveUpdateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
