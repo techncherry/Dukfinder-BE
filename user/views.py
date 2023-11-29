@@ -28,7 +28,7 @@ class LoginView(generics.GenericAPIView):
 class ProfileView(generics.RetrieveUpdateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [CustomReadOnly] # 본인만 프로필 수정 가능하도록
+    permission_classes = [CustomReadOnly] # 본인만 프로필 수정 가능하도록 권한 설정
 
 # 유저 이름과 이메일 가져오기/회원탈퇴/로그아웃
 class UserinfoView(generics.GenericAPIView):
@@ -74,15 +74,14 @@ class PasswordView(generics.UpdateAPIView):
             old_password = serializer.validated_data['old_password']
             new_password = serializer.validated_data['new_password']
 
-            # Check if the old password is correct
+            # 원래 비번과 맞는지 체크
             if not user.check_password(old_password):
-                return Response({'detail': 'Old password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'detail': '원래 비밀번호와 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Set the new password and save the user object
             user.set_password(new_password)
             user.save()
 
-            return Response({'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+            return Response({'detail': '비밀번호 변경 성공'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
