@@ -1,13 +1,10 @@
 from django.urls import path, include
 from rest_framework import routers
-
+from rest_framework.routers import DefaultRouter
+from . import views
 from .views import CategoryPostsView, LostPostListView, LostPostDetailView, ThisWeekPostsListView, \
-    ThisMonthPostsListView, LostPostSearchAPIView, LostPostCreateView, LostPostUpdateView, CommentViewSet
-
-router = routers.SimpleRouter()
-router.register('comments', CommentViewSet)
-
-
+    ThisMonthPostsListView, LostPostSearchAPIView, LostPostCreateView, LostPostUpdateView, \
+    CommentViewSet, ReplyViewSet
 
 urlpatterns = [
     path('lost_posts/', LostPostListView.as_view(), name='post-list'),
@@ -18,5 +15,12 @@ urlpatterns = [
     path('lost_posts/this-month', ThisMonthPostsListView.as_view(), name='this-month-posts-list'),
     path('lost_posts/category/<str:category>', CategoryPostsView.as_view(), name='category-posts'),
     path('lost_posts/search/', LostPostSearchAPIView.as_view(), name='post-search-api'),
-    path('lost_posts/', include(router.urls)),
+    path('lost_posts/comment/', CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
+    path('lost_posts/comment/<int:pk>/',
+         CommentViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='comment-detail'),
+    path('lost_posts/reply/', ReplyViewSet.as_view({'get': 'list', 'post': 'create'}), name='reply-list'),
+    path('lost_posts/reply/<int:pk>/', ReplyViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='reply-detail'),
 ]
+

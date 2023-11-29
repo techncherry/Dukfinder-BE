@@ -60,7 +60,16 @@ class LostPost(models.Model):
 
 
 class Comment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    # Post 모델에서 Comment 모델에 접근할 때 post.comments.all() 이렇게 사용할 수 있음
-    post = models.ForeignKey(LostPost, related_name='comments', on_delete=models.CASCADE)
-    text = models.TextField()
+    user_id = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(LostPost, related_name='comments', on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+# 대댓글(답글)
+class Reply(models.Model):
+    user_id = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    comment_id = models.ForeignKey(Comment, related_name='replys', on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

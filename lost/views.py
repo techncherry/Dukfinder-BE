@@ -1,11 +1,11 @@
 from rest_framework import generics, permissions, viewsets
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 
-from .models import LostPost, Comment
+from .models import LostPost, Comment, Reply
 from django.utils import timezone
 from datetime import timedelta
-from .serializers import LostPostSerializer, CommentSerializer, CommentCreateSerializer
+from .serializers import LostPostSerializer, CommentSerializer, ReplySerializer
 from django.db.models import Q
 
 
@@ -21,18 +21,6 @@ class CustomReadOnly(permissions.BasePermission):
         return obj.author == request.user
 
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-
-
-    def get_serializer_class(self):
-        if self.action == 'list' or 'retrieve':
-            return CommentSerializer
-        return CommentCreateSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
 
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = LostPostSerializer
@@ -44,32 +32,26 @@ class CategoryPostsView(generics.ListAPIView):
 
 
 class LostPostListView(generics.ListAPIView): #lostpostlist
-    queryset = LostPost.objects.all()
+    queryset = LostPost.objects.order_by('-created_at')
     serializer_class = LostPostSerializer
     permission_classes = [CustomReadOnly]
 
-class LostPostDetailView(generics.RetrieveDestroyAPIView): #lostpostlistdetail, destory
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+class LostPostDetailView(generics.RetrieveDestroyAPIView): #Findpostlistdetail, destory
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
-    permission_classes = [CustomReadOnly]
-
 
 class LostPostCreateView(CreateAPIView): #lostpostlistcreate
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 class LostPostUpdateView(generics.RetrieveUpdateAPIView):
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
-    lookup_url_kwarg = 'intLpk'  # Set the correct lookup field name
-    permission_classes = [CustomReadOnly]  # Apply the custom permission class
-
-    # Override the default permission classes
-    def get_permissions(self):
-        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.IsAuthenticated(), CustomReadOnly()]
-        return [CustomReadOnly()]
+    lookup_url_kwarg = 'intLpk'
 
 class ThisWeekPostsListView(generics.ListAPIView):
     serializer_class = LostPostSerializer
@@ -102,3 +84,11 @@ class LostPostSearchAPIView(generics.ListAPIView):
         return LostPost.objects.filter(Q(title__icontains=query))
 
 
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.prefetch_related('replys')
+    serializer_class = CommentSerializer
+
+
+class ReplyViewSet(viewsets.ModelViewSet):
+    queryset = Reply.objects.all()
+    serializer_class = ReplySerializer
