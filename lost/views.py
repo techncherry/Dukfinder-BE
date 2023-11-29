@@ -1,9 +1,11 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets
 from rest_framework.generics import CreateAPIView
-from .models import LostPost
+from rest_framework.response import Response
+
+from .models import LostPost, Comment
 from django.utils import timezone
 from datetime import timedelta
-from .serializers import LostPostSerializer
+from .serializers import LostPostSerializer, CommentSerializer, CommentCreateSerializer
 from django.db.models import Q
 
 
@@ -17,6 +19,20 @@ class CustomReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         return obj.author == request.user
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+
+
+    def get_serializer_class(self):
+        if self.action == 'list' or 'retrieve':
+            return CommentSerializer
+        return CommentCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
 
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = LostPostSerializer
@@ -36,6 +52,7 @@ class LostPostDetailView(generics.RetrieveDestroyAPIView): #lostpostlistdetail, 
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
     permission_classes = [CustomReadOnly]
+
 
 class LostPostCreateView(CreateAPIView): #lostpostlistcreate
     queryset = LostPost.objects.all()

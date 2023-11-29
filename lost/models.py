@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -49,6 +51,7 @@ class LostPost(models.Model):
     ]
 
     found_status = models.CharField(max_length=10, choices=FOUND_STATUS_CHOICES, default='못찾음')
+
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'
 
@@ -56,4 +59,8 @@ class LostPost(models.Model):
         return f'/blog/{self.pk}/'
 
 
-
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Post 모델에서 Comment 모델에 접근할 때 post.comments.all() 이렇게 사용할 수 있음
+    post = models.ForeignKey(LostPost, related_name='comments', on_delete=models.CASCADE)
+    text = models.TextField()

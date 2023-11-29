@@ -1,5 +1,11 @@
 from django.urls import path, include
-from .views import CategoryPostsView, LostPostListView, LostPostDetailView, ThisWeekPostsListView, ThisMonthPostsListView, LostPostSearchAPIView, LostPostCreateView, LostPostUpdateView
+from rest_framework import routers
+
+from .views import CategoryPostsView, LostPostListView, LostPostDetailView, ThisWeekPostsListView, \
+    ThisMonthPostsListView, LostPostSearchAPIView, LostPostCreateView, LostPostUpdateView, CommentViewSet
+
+router = routers.SimpleRouter()
+router.register('comments', CommentViewSet)
 
 
 
@@ -12,5 +18,5 @@ urlpatterns = [
     path('lost_posts/this-month', ThisMonthPostsListView.as_view(), name='this-month-posts-list'),
     path('lost_posts/category/<str:category>', CategoryPostsView.as_view(), name='category-posts'),
     path('lost_posts/search/', LostPostSearchAPIView.as_view(), name='post-search-api'),
-
+    path('lost_posts/', include(router.urls)),
 ]
