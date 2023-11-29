@@ -4,11 +4,12 @@ from django.contrib.auth.password_validation import validate_password  # Django�
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token  # Token 모델
 from rest_framework.validators import UniqueValidator  # 이메일 중복 방지를 위한 검증 도구
-from django.contrib.auth import authenticate # Django의 기본 authenticate 함수 -> 우리가 설정한 DefaultAuthBackend인 TokenAuth 방식으로 유저를 인증해준다.
+from django.contrib.auth import authenticate
+# Django의 기본 authenticate 함수 -> 우리가 설정한 DefaultAuthBackend인 TokenAuth 방식으로 유저를 인증해준다.
 
 from .models import Profile
 
-# 회원가입 시리얼라이저
+# 회원가입
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True, # 필수 항목 의미
@@ -19,7 +20,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         required=True,
         validators=[validate_password],  # 비밀번호에 대한 검증
     )
-    password2 = serializers.CharField(  # 비밀번호 확인을 위한 필드
+    password2 = serializers.CharField(
         write_only=True,
         required=True,
     )
@@ -28,11 +29,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email', 'password', 'password2')
 
-    def validate(self, data):  # password과 password2의 일치 여부 확인
+    def validate(self, data): 
+        # password과 password2의 일치 여부 확인
         if data['password'] != data['password2']:
             raise serializers.ValidationError(
-                {"password": "Password fields didn't match."})
-        """기록하레이에서 여기만 추가"""
+                {"password": "비밀번호가 일치하지 않습니다."})
+        
+        # 덕성 이메일인지
         if not data.get("email", "").endswith("@duksung.ac.kr"):
             raise serializers.ValidationError(
                 detail={"error": "덕성 이메일만 가입할 수 있습니다."}
@@ -52,12 +55,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         token = Token.objects.create(user=user)
         return user
 
-# 로그인 시리얼라이저
+# 로그인
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
-
-    # write_only=True 옵션을 통해 클라이언트->서버의 역직렬화는 가능하지만, 서버->클라이언트 방향의 직렬화는 불가능하도록 해준다.
+    # write_only=True 옵션을 통해 클라이언트->서버의 역직렬화는 가능하지만, 서버->클라이언트 방향의 직렬화는 불가능(보안 위해)
 
     def validate(self, data):
         user = authenticate(**data)
@@ -68,11 +70,11 @@ class LoginSerializer(serializers.Serializer):
             {"error": "가입된 회원이 아닙니다."}
         )
 
-# 프로필 사진 시리얼라이저
+# 프로필 사진
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("image", ) # 이거 , 넣는 거 중괄호 맞나?
+        fields = ("image", )
 
 # 유저 이름, 이메일
 class UserinfoSerializer(serializers.ModelSerializer):
