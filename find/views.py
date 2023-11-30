@@ -1,27 +1,49 @@
-from rest_framework import generics
+
+from rest_framework import generics, permissions, viewsets
 from rest_framework.generics import CreateAPIView
-from .models import FindPost
+
+from .models import FindPost, Comment, Reply
 from django.utils import timezone
 from datetime import timedelta
-from .serializers import FindPostSerializer
+from .serializers import FindPostSerializer, CommentSerializer, ReplySerializer
 from django.db.models import Q
+
+
+class CustomReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'GET' and request.user.is_authenticated:
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.author == request.user
+
+
 
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = FindPostSerializer
+
 
     def get_queryset(self):
         category = self.kwargs['category']
         return FindPost.objects.filter(category=category)
 
 
-class FindPostListView(generics.ListAPIView): #Findpostlist
-    queryset = FindPost.objects.all()
+class FindPostListView(generics.ListAPIView): #lostpostlist
+    queryset = FindPost.objects.order_by('-created_at')
     serializer_class = FindPostSerializer
+    permission_classes = [CustomReadOnly]
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 class FindPostDetailView(generics.RetrieveDestroyAPIView): #Findpostlistdetail, destory
     queryset = FindPost.objects.all()
     serializer_class = FindPostSerializer
+
+
 
 class FindPostCreateView(CreateAPIView): #lostpostlistcreate
     queryset = FindPost.objects.all()
@@ -34,7 +56,7 @@ class FindPostUpdateView(generics.RetrieveUpdateAPIView):
 
 class ThisWeekPostsListView(generics.ListAPIView):
     serializer_class = FindPostSerializer
-
+    permission_classes = [CustomReadOnly]
     def get_queryset(self):
         today = timezone.now().date()
         start_of_week = today - timedelta(days=today.weekday())
@@ -45,6 +67,7 @@ class ThisWeekPostsListView(generics.ListAPIView):
 
 class ThisMonthPostsListView(generics.ListAPIView):
     serializer_class = FindPostSerializer
+    permission_classes = [CustomReadOnly]
 
     def get_queryset(self):
         today = timezone.now().date()
@@ -57,7 +80,17 @@ class ThisMonthPostsListView(generics.ListAPIView):
 
 class FindPostSearchAPIView(generics.ListAPIView):
     serializer_class = FindPostSerializer
-
+    permission_classes = [CustomReadOnly]
     def get_queryset(self):
         query = self.request.query_params.get('q', '')
         return FindPost.objects.filter(Q(title__icontains=query))
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.prefetch_related('replys')
+    serializer_class = CommentSerializer
+
+
+class ReplyViewSet(viewsets.ModelViewSet):
+    queryset = Reply.objects.all()
+    serializer_class = ReplySerializer

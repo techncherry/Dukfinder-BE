@@ -14,7 +14,7 @@ class FindPost(models.Model):
 
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
-    date_select = models.DateTimeField(blank=True, null=True)
+    date_select = models.DateField(blank=True, null=True)
 
     CATEGORY_CHOICES = [
         ('전자기기', '전자기기'),
@@ -48,4 +48,17 @@ class FindPost(models.Model):
     def get_absolute_url(self):
         return f'/blog/{self.pk}/'
 
+class Comment(models.Model):
+    user_id = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(FindPost, related_name='comments', on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+# 대댓글(답글)
+class Reply(models.Model):
+    user_id = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    comment_id = models.ForeignKey(Comment, related_name='replys', on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
