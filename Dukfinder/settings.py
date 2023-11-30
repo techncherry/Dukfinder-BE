@@ -40,9 +40,6 @@ INSTALLED_APPS = [
     'find',
     'rest_framework',
     'rest_framework.authtoken',
-    'notice',
-    'lost',
-    'channels',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +53,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Dukfinder.urls'
-
 
 TEMPLATES = [
     {
