@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 
+# 미디어 관련
 from django.conf import settings
 from django.conf.urls.static import static
 

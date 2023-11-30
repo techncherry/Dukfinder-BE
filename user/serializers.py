@@ -44,7 +44,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        # CREATE 요청에 대해 create 메서드를 오버라이딩하여, 유저를 생성하고 토큰도 생성하게 해준다.
+        # CREATE 요청에 대해 create 메서드를 오버라이딩해 유저를 생성하고 토큰도 생성하게 해준다.
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -53,6 +53,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         token = Token.objects.create(user=user)
+        
         return user
 
 # 로그인

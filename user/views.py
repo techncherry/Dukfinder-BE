@@ -74,7 +74,7 @@ class PasswordView(generics.UpdateAPIView):
             old_password = serializer.validated_data['old_password']
             new_password = serializer.validated_data['new_password']
 
-            # 원래 비번과 맞는지 체크
+            # 원래 비번과 맞는지 확인
             if not user.check_password(old_password):
                 return Response({'detail': '원래 비밀번호와 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
