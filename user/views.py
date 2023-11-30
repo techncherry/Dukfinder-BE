@@ -154,7 +154,7 @@ class MyFindBulkDeleteView(APIView):
         queryset.delete()
         return Response({"detail": "Selected contacts deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
-# found_status 일괄 변경
+# found_status 일괄 변경 처리
 class UpdateFoundStatusBulkView(APIView):
     permission_classes = [IsAuthenticated]
 
