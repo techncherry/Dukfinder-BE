@@ -16,8 +16,9 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('user_id', 'post_id', 'content', 'created_at', 'updated_at', 'replys')
 
 
-class LostPostSerializer(serializers.ModelSerializer):
 
+class LostPostSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
     class Meta:
         model = LostPost
         fields = '__all__'
