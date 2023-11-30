@@ -5,7 +5,7 @@ class NoticePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NoticePost
-        fields = ('id', 'title', 'content', 'notice_image', 'top_fixed', 'created_at', 'updated_at', 'author')
+        fields = ('id', 'title', 'content', 'notice_image', 'top_fixed', 'created_at', 'author')
 
     def increase_views(self, instance):
         instance.view_count += 1

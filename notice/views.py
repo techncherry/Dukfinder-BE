@@ -33,11 +33,3 @@ class NoticePostDetailView(generics.RetrieveDestroyAPIView):
     def perform_destroy(self, instance):
         instance.delete()
         return HttpResponseRedirect(reverse('notice-list'))
-
-class NoticePostUpdateView(generics.RetrieveUpdateAPIView): #공지사항 수정
-    queryset = NoticePost.objects.all()
-    serializer_class = NoticePostSerializer
-
-    def perform_update(self, serializer):
-        serializer.save()
-        return HttpResponseRedirect(reverse('notice-list'))
