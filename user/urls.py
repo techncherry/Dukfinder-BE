@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from .views import RegisterView, LoginView, ProfileView, UserinfoView
+from .views import RegisterView, LoginView, ProfileView, UserinfoView, PasswordView, MyLostListView, MyFindListView, MyLostBulkDeleteView, MyFindBulkDeleteView, UpdateFoundStatusBulkView
 
 app_name = 'user'
 
@@ -24,5 +24,12 @@ urlpatterns = [
     path('login/', LoginView.as_view()),
     path('profile/<int:pk>/', ProfileView.as_view()),
     path('userinfo/', UserinfoView.as_view()),
+    path('password/', PasswordView.as_view()),
+
+    path('mylost/', MyLostListView.as_view()),
+    path('myfind/', MyFindListView.as_view()),
+    path('mylost/bulk-delete/<str:pk_ids>/', MyLostBulkDeleteView.as_view(), name='my-lost-bulk-delete'), # 글의 아이디
+    path('myfind/bulk-delete/<str:pk_ids>/', MyFindBulkDeleteView.as_view(), name='my-find-bulk-delete'),
+    path('mypost/bulk-update/<str:pk_ids>/', UpdateFoundStatusBulkView.as_view(), name='my-post-bulk-update'),
 ]
 

@@ -9,6 +9,14 @@ from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.response import Response
 
+# 내가 쓴 글 리스트
+from lost.models import LostPost
+from lost.serializers import LostPostSerializer
+from find.models import FindPost
+from find.serializers import FindPostSerializer
+
+from rest_framework.views import APIView
+
 # 회원가입
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -85,3 +93,81 @@ class PasswordView(generics.UpdateAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# 마이페이지에서 쓸 리스트 및 일괄 처리들
+class MyLostListView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LostPostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return LostPost.objects.filter(author=user)
+
+    def get(self, request):
+        user = request.user
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+class MyFindListView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FindPostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return FindPost.objects.filter(author=user)
+
+    def get(self, request):
+        user = request.user
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+class MyLostBulkDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk_ids):
+        ids = [int(pk) for pk in pk_ids.split(',')]
+        user = request.user
+
+        # Ensure the selected contacts belong to the requesting user
+        queryset = LostPost.objects.filter(id__in=ids, author=user)
+
+        if not queryset.exists():
+            return Response({"detail": "Invalid contact selection."}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset.delete()
+        return Response({"detail": "Selected contacts deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+class MyFindBulkDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk_ids):
+        ids = [int(pk) for pk in pk_ids.split(',')]
+        user = request.user
+
+        # Ensure the selected contacts belong to the requesting user
+        queryset = FindPost.objects.filter(id__in=ids, author=user)
+
+        if not queryset.exists():
+            return Response({"detail": "Invalid contact selection."}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset.delete()
+        return Response({"detail": "Selected contacts deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+# found_status 일괄 변경
+class UpdateFoundStatusBulkView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk_ids):
+        ids = [int(pk) for pk in pk_ids.split(',')]
+        user = request.user
+
+        queryset = LostPost.objects.filter(id__in=ids, author=user)
+
+        if not queryset.exists():
+            return Response({"detail": "해당 글이 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 일괄적으로 found_status를 "찾음"으로 변경
+        queryset.update(found_status="찾음")
+
+        return Response({"detail": "찾음으로 변경 완료"}, status=status.HTTP_200_OK)
