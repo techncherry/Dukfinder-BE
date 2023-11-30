@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Post
-# Register your models here.
+from .models import FindPost
 
-admin.site.register(Post)
+admin.site.register(FindPost)
