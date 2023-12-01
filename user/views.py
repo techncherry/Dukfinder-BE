@@ -122,37 +122,27 @@ class MyFindListView(generics.GenericAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class MyLostBulkDeleteView(APIView):
+class BulkDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, pk_ids):
-        ids = [int(pk) for pk in pk_ids.split(',')]
+    def delete(self, request, *args, **kwargs):
         user = request.user
+        lost_ids = kwargs.get('lost_ids', '').split(',')
+        find_ids = kwargs.get('find_ids', '').split(',')
 
-        # Ensure the selected contacts belong to the requesting user
-        queryset = LostPost.objects.filter(id__in=ids, author=user)
+        lost_queryset = LostPost.objects.filter(author=user, id__in=lost_ids)
+        find_queryset = FindPost.objects.filter(author=user, id__in=find_ids)
 
-        if not queryset.exists():
-            return Response({"detail": "Invalid contact selection."}, status=status.HTTP_400_BAD_REQUEST)
+        if not lost_queryset.exists() or not find_queryset.exists():
+            return Response({"detail": "Invalid post selection."}, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset.delete()
-        return Response({"detail": "Selected contacts deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        # 일괄적으로 lost posts 삭제
+        lost_queryset.delete()
 
-class MyFindBulkDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
+        # 일괄적으로 find posts 삭제
+        find_queryset.delete()
 
-    def delete(self, request, pk_ids):
-        ids = [int(pk) for pk in pk_ids.split(',')]
-        user = request.user
-
-        # Ensure the selected contacts belong to the requesting user
-        queryset = FindPost.objects.filter(id__in=ids, author=user)
-
-        if not queryset.exists():
-            return Response({"detail": "Invalid contact selection."}, status=status.HTTP_400_BAD_REQUEST)
-
-        queryset.delete()
-        return Response({"detail": "Selected contacts deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail": "삭제 성공"}, status=status.HTTP_204_NO_CONTENT)
 
 # found_status 일괄 변경 처리
 class UpdateFoundStatusBulkView(APIView):
