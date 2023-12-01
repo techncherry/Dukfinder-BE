@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'notice',
     'find',
     'lost',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
