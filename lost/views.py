@@ -18,13 +18,12 @@ class CustomReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj.author == request.user
-
+        return obj.author == request.user or request.user.is_superuser
 
 
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = LostPostSerializer
-
+    permission_classes = [CustomReadOnly]
 
     def get_queryset(self):
         category = self.kwargs['category']
@@ -42,16 +41,19 @@ class LostPostListView(generics.ListAPIView): #lostpostlist
 class LostPostDetailView(generics.RetrieveDestroyAPIView): #Findpostlistdetail, destory
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
+    permission_classes = [CustomReadOnly]
 
 
 class LostPostCreateView(CreateAPIView): #lostpostlistcreate
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
+    permission_classes = [CustomReadOnly]
 
 class LostPostUpdateView(generics.RetrieveUpdateAPIView):
     queryset = LostPost.objects.all()
     serializer_class = LostPostSerializer
     lookup_url_kwarg = 'intLpk'
+    permission_classes = [CustomReadOnly]
 
 class ThisWeekPostsListView(generics.ListAPIView):
     serializer_class = LostPostSerializer
@@ -87,8 +89,10 @@ class LostPostSearchAPIView(generics.ListAPIView):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.prefetch_related('replys')
     serializer_class = CommentSerializer
+    permission_classes = [CustomReadOnly]
 
 
 class ReplyViewSet(viewsets.ModelViewSet):
     queryset = Reply.objects.all()
     serializer_class = ReplySerializer
+    permission_classes = [CustomReadOnly]

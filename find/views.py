@@ -18,13 +18,13 @@ class CustomReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj.author == request.user
+        return obj.author == request.user or request.user.is_superuser
 
 
 
 class CategoryPostsView(generics.ListAPIView):
     serializer_class = FindPostSerializer
-
+    permission_classes = [CustomReadOnly]
 
     def get_queryset(self):
         category = self.kwargs['category']
@@ -42,16 +42,17 @@ class FindPostListView(generics.ListAPIView): #lostpostlist
 class FindPostDetailView(generics.RetrieveDestroyAPIView): #Findpostlistdetail, destory
     queryset = FindPost.objects.all()
     serializer_class = FindPostSerializer
-
-
+    permission_classes = [CustomReadOnly]
 
 class FindPostCreateView(CreateAPIView): #lostpostlistcreate
     queryset = FindPost.objects.all()
     serializer_class = FindPostSerializer
+    permission_classes = [CustomReadOnly]
 
 class FindPostUpdateView(generics.RetrieveUpdateAPIView):
     queryset = FindPost.objects.all()
     serializer_class = FindPostSerializer
+    permission_classes = [CustomReadOnly]
     lookup_url_kwarg = 'intLpk'
 
 class ThisWeekPostsListView(generics.ListAPIView):
@@ -89,8 +90,10 @@ class FindPostSearchAPIView(generics.ListAPIView):
 class FindCommentViewSet(viewsets.ModelViewSet):
     queryset = FindComment.objects.prefetch_related('replys')
     serializer_class = FindCommentSerializer
+    permission_classes = [CustomReadOnly]
 
 
 class FindReplyViewSet(viewsets.ModelViewSet):
     queryset = FindReply.objects.all()
     serializer_class = FindReplySerializer
+    permission_classes = [CustomReadOnly]

@@ -2,10 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 import os
 
-class NoticePost(models.Model):
-    title = models.CharField(max_length=30, blank=True)
+class NoticePost(models.Model): # 공지사항 포스트 모델
+    title = models.CharField(max_length=30, blank=True) # 제목
 
-    content = models.TextField()
+    content = models.TextField() # 내용
 
     notice_image = models.ImageField(upload_to='notice/images/%Y/%m/%d/', blank=True)
     top_fixed = models.BooleanField(default=False)
